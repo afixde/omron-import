@@ -2,6 +2,8 @@ from pathlib import Path
 
 from csv_reader import OmronCsvReader
 
+from excel_service import ExcelService
+
 import sys
 
 def main() -> None:
@@ -27,6 +29,13 @@ def main() -> None:
             print()
             print("Erste Messung:")
             print(measurements[0])
+            
+        excel = ExcelService(
+            Path("data") / "excel" / "Omron.xlsx"
+)
+        excel.open()
+
+        excel.close()
 
     except FileNotFoundError:
         print()
