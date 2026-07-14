@@ -1,0 +1,18 @@
+from dataclasses import dataclass
+from datetime import date, time
+
+
+@dataclass(frozen=True, slots=True)
+class Measurement:
+    """Eine einzelne Blutdruckmessung."""
+
+    date: date
+    time: time
+    systolic: int
+    diastolic: int
+    pulse: int
+
+    @property
+    def key(self) -> tuple[date, time]:
+        """Eindeutiger Schlüssel für die Duplikaterkennung."""
+        return self.date, self.time

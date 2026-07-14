@@ -1,14 +1,22 @@
 from pathlib import Path
 
-def main():
-    print("=" * 40)
-    print("Omron Import v0.1.0")
-    print("=" * 40)
+from csv_reader import OmronCsvReader
 
-    print("Projektverzeichnis:")
-    print(Path.cwd())
 
-    print("\nBereit.")
+def main() -> None:
+
+    print("=" * 45)
+    print(" Omron Import v0.2.0")
+    print("=" * 45)
+
+    csv_dir = Path("data") / "csv"
+
+    print(f"CSV-Verzeichnis: {csv_dir.resolve()}")
+
+    reader = OmronCsvReader()
+
+    print("CSV-Reader initialisiert.")
+
 
 if __name__ == "__main__":
     main()
