@@ -12,3 +12,6 @@ data/backup/*
 
 data/logs/*
 !data/logs/.gitkeep
+
+data/csv/*
+!data/csv/.gitkeep

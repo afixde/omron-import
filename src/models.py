@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from datetime import date, time
-
+from datetime import date, time, datetime
 
 @dataclass(frozen=True, slots=True)
 class Measurement:
@@ -16,3 +15,8 @@ class Measurement:
     def key(self) -> tuple[date, time]:
         """Eindeutiger Schlüssel für die Duplikaterkennung."""
         return self.date, self.time
+
+    @property
+    def timestamp(self) -> datetime:
+        """Datum und Uhrzeit als datetime."""
+        return datetime.combine(self.date, self.time)
