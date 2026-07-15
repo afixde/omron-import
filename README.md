@@ -1,21 +1,32 @@
 # Omron Import
 
-Importiert automatisch Blutdruckmessungen aus OMRON Connect
-in eine Excel-Auswertung.
+Importiert Blutdruckmessungen aus der OMRON Connect App in eine Excel-Tabelle.
 
-## Features
+## Funktionen
 
-- automatische CSV-Erkennung
-- Excel COM
-- keine beschädigten Formeln
-- Duplikaterkennung
-- Backup
-- Archivierung
+- CSV automatisch erkennen
+- Dublettenerkennung
+- Excel automatisch aktualisieren
+- automatische Sortierung
+- Backup der Excel-Datei
+- Archivierung importierter CSV-Dateien
+- Logging
 
-## Windows
+## Voraussetzungen
 
-Python 3.14
+- Windows 11
+- Python 3.14
+- Microsoft Excel
+- pywin32
 
+## Installation
+
+```bash
+git clone ...
+cd omron-import
 pip install -r requirements.txt
+```
 
-start_import.bat
+## Projektstruktur
+
+...

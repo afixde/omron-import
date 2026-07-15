@@ -3,23 +3,29 @@ from csv_reader import OmronCsvReader
 from excel_service import ExcelService
 from config import CSV_DIR, EXCEL_FILE, BACKUP_DIR, ARCHIVE_DIR
 from file_utils import archive_file
+from logger_config import get_logger
+from version import VERSION
 
 import sys
+
+logger = get_logger()
 
 def main() -> None:
 
     print("=" * 50)
-    print(" Omron Import")
+    print(f" Omron Import v{VERSION}")
     print("=" * 50)
+    
+    logger.info("Programmstart")
 
     try:
         reader = OmronCsvReader()
 
         csv_file = reader.find_latest_csv(CSV_DIR)
-
-        print(f"CSV gefunden: {csv_file.name}")
+        logger.info("CSV gefunden: %s", csv_file.name)
 
         measurements = reader.read(csv_file)
+        logger.info("%s Messungen eingelesen", len(measurements))        
 
         print(f"{len(measurements)} Messungen eingelesen")
 
@@ -29,6 +35,7 @@ def main() -> None:
 #            print(measurements[0])
             
         excel = ExcelService(EXCEL_FILE)
+        logger.info("Excel geöffnet")
 
         backup = excel.backup_workbook(BACKUP_DIR)
         print(f"Backup erstellt: {backup.name}")
@@ -36,12 +43,14 @@ def main() -> None:
         excel.open()
 
         existing = excel.get_existing_keys()
+        logger.info("%d vorhandene Messungen", len(existing))
 
         new_measurements = [
             m for m in measurements
             if m.key not in existing
         ]
         
+        logger.info("%d neue Messungen", len(new_measurements))
         print(f"{len(new_measurements)} neue Messungen gefunden")
         
         if new_measurements:
@@ -60,7 +69,7 @@ def main() -> None:
             )
             print()
             print(f"CSV archiviert: {archived.name}")        
-#        print()
+            logger.info("Import erfolgreich abgeschlossen")#        print()
 #        print(f"{len(existing)} vorhandene Messungen in Excel")
 
         excel.close()
@@ -79,6 +88,7 @@ def main() -> None:
         print()
         print("Unerwarteter Fehler:")
         print(ex)
+        logger.exception("Unerwarteter Fehler")
         sys.exit(1)
 
     input("\nDrücken Sie ENTER zum Beenden...")
