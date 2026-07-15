@@ -4,6 +4,8 @@ from csv_reader import OmronCsvReader
 
 from excel_service import ExcelService
 
+from config import CSV_DIR, EXCEL_FILE
+
 import sys
 
 def main() -> None:
@@ -15,9 +17,7 @@ def main() -> None:
     try:
         reader = OmronCsvReader()
 
-        csv_dir = Path("data") / "csv"
-
-        csv_file = reader.find_latest_csv(csv_dir)
+        csv_file = reader.find_latest_csv(CSV_DIR)
 
         print(f"CSV gefunden: {csv_file.name}")
 
@@ -30,9 +30,7 @@ def main() -> None:
             print("Erste Messung:")
             print(measurements[0])
             
-        excel = ExcelService(
-            Path("data") / "excel" / "Omron.xlsx"
-)
+        excel = ExcelService(EXCEL_FILE)
         excel.open()
 
         print(excel)
