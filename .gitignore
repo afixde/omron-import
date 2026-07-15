@@ -1,17 +1,24 @@
+# Python
 __pycache__/
-*.pyc
-.venv/
-.vscode/
-.idea/
+*.py[cod]
+*.pyo
 
-data/archive/*
-!data/archive/.gitkeep
+# IDE
+.settings/
+.project
+.pydevproject
 
-data/backup/*
-!data/backup/.gitkeep
+# Logs
+logs/
 
-data/logs/*
-!data/logs/.gitkeep
+# Backups
+backup/
 
-data/csv/*
-!data/csv/.gitkeep
+# CSV import/export data
+data/
+
+# Test output
+test/
+
+# Zip archives
+*.zip
