@@ -1,10 +1,8 @@
 from pathlib import Path
-
 from csv_reader import OmronCsvReader
-
 from excel_service import ExcelService
-
-from config import CSV_DIR, EXCEL_FILE
+from config import CSV_DIR, EXCEL_FILE, BACKUP_DIR, ARCHIVE_DIR
+from file_utils import archive_file
 
 import sys
 
@@ -31,6 +29,10 @@ def main() -> None:
 #            print(measurements[0])
             
         excel = ExcelService(EXCEL_FILE)
+
+        backup = excel.backup_workbook(BACKUP_DIR)
+        print(f"Backup erstellt: {backup.name}")
+        
         excel.open()
 
         existing = excel.get_existing_keys()
@@ -52,8 +54,13 @@ def main() -> None:
             excel.save()
             print("Import abgeschlossen.")
             print("Excel gespeichert.")
-        
-        print()
+            archived = archive_file(
+                csv_file,
+                ARCHIVE_DIR
+            )
+            print()
+            print(f"CSV archiviert: {archived.name}")        
+#        print()
 #        print(f"{len(existing)} vorhandene Messungen in Excel")
 
         excel.close()
