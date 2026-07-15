@@ -35,6 +35,27 @@ def main() -> None:
 )
         excel.open()
 
+        print(excel)
+        print(excel.table)
+
+        existing = excel.get_existing_keys()
+
+        new_measurements = [
+            m for m in measurements
+            if m.key not in existing
+        ]
+        
+        print(f"{len(new_measurements)} neue Messungen gefunden")
+        
+        if new_measurements:
+            print("Schreibe erste neue Messung...")
+            excel.append_measurement(new_measurements[0])
+            excel.save()
+        
+        print()
+        print(f"{len(existing)} vorhandene Messungen in Excel")
+
+
         excel.close()
 
     except FileNotFoundError:
