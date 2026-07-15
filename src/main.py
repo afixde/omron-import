@@ -25,16 +25,13 @@ def main() -> None:
 
         print(f"{len(measurements)} Messungen eingelesen")
 
-        if measurements:
-            print()
-            print("Erste Messung:")
-            print(measurements[0])
+#        if measurements:
+#            print()
+#            print("Erste Messung:")
+#            print(measurements[0])
             
         excel = ExcelService(EXCEL_FILE)
         excel.open()
-
-        print(excel)
-        print(excel.table)
 
         existing = excel.get_existing_keys()
 
@@ -53,10 +50,11 @@ def main() -> None:
 
             excel.sort_table()
             excel.save()
+            print("Import abgeschlossen.")
+            print("Excel gespeichert.")
         
         print()
-        print(f"{len(existing)} vorhandene Messungen in Excel")
-
+#        print(f"{len(existing)} vorhandene Messungen in Excel")
 
         excel.close()
 

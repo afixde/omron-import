@@ -57,8 +57,8 @@ class OmronCsvReader:
             reverse=True,
         )
         
-        for file in files:
-            print (file)
+#        for file in files:
+#            print (file)
 
         if not files:
             raise FileNotFoundError(
