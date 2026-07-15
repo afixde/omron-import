@@ -12,10 +12,14 @@ class Measurement:
     pulse: int
 
     @property
-    def key(self) -> tuple[date, time]:
-        """Eindeutiger Schlüssel für die Duplikaterkennung."""
-        return self.date, self.time
-
+    def key(self) -> str:
+        """Eindeutiger Schlüssel einer Messung."""
+    
+        return (
+            f"{self.date.isoformat()} "
+            f"{self.time.strftime('%H:%M')}"
+        )
+    
     @property
     def timestamp(self) -> datetime:
         """Datum und Uhrzeit als datetime."""

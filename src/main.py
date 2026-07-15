@@ -46,8 +46,12 @@ def main() -> None:
         print(f"{len(new_measurements)} neue Messungen gefunden")
         
         if new_measurements:
-            print("Schreibe erste neue Messung...")
-            excel.append_measurement(new_measurements[0])
+            print(f"{len(new_measurements)} neue Messungen werden importiert...")
+        
+            for measurement in new_measurements:
+                excel.append_measurement(measurement)
+
+            excel.sort_table()
             excel.save()
         
         print()

@@ -1,9 +1,10 @@
 from pathlib import Path
-import csv
+
 from datetime import date, time
 
 from models import Measurement
 
+import csv
 
 GERMAN_MONTHS = {
     "Januar": 1,
@@ -55,6 +56,9 @@ class OmronCsvReader:
             key=lambda p: p.stat().st_mtime,
             reverse=True,
         )
+        
+        for file in files:
+            print (file)
 
         if not files:
             raise FileNotFoundError(
