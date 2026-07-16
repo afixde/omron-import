@@ -10,12 +10,21 @@ __pycache__/
 
 # Logs
 logs/
+!logs/.gitkeep
 
 # Backups
 backup/
+!backup/.gitkeep
 
 # CSV import/export data
-data/
+data/csv/*
+data/excel/*
+data/archive/*
+data/backup/*
+!data/csv/.gitkeep
+!data/excel/.gitkeep
+!data/archive/.gitkeep
+!data/backup/.gitkeep
 
 # Test output
 test/

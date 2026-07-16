@@ -116,30 +116,6 @@ class ExcelService:
         
         return keys
 
-    def append_measurement_org(self, measurement: Measurement) -> None:
-        """
-        Fügt eine Messung am Ende der Excel-Tabelle hinzu.
-        """
-        new_row = self.table.ListRows.Add()
-    
-        row = new_row.Range
-    
-        row.Cells(1, 1).Value = datetime.combine(
-            measurement.date,
-            datetime.min.time()
-        )
-        
-        row.Cells(1, 2).Value = datetime.combine(
-            datetime.today().date(),
-            measurement.time
-        )
-        row.Cells(1, 1).NumberFormatLocal = "TT.MM.JJJJ"
-        row.Cells(1, 2).NumberFormatLocal = "hh:mm"        
-        
-        row.Cells(1, 3).Value = measurement.systolic
-        row.Cells(1, 4).Value = measurement.diastolic
-        row.Cells(1, 5).Value = measurement.pulse
-        
     def append_measurement(self, measurement: Measurement) -> None:
         """
         Fügt eine Messung am Ende der Excel-Tabelle hinzu.
@@ -215,4 +191,49 @@ class ExcelService:
     
         shutil.copy2(self.workbook_path, backup_file)
     
-        return backup_file            
+        return backup_file         
+    
+    def get_all_measurements(self) -> list[Measurement]:
+        """
+        Liest alle Messungen aus der Excel-Tabelle.
+        """
+        measurements = []
+    
+        data = self.table.DataBodyRange.Value
+    
+        if not data:
+            return measurements
+    
+        if not isinstance(data[0], tuple):
+            data = (data,)
+
+        row = data[0]
+        
+        for row in data:
+
+            datum = row[0]
+            uhrzeit = row[1]
+        
+            if datum is None or uhrzeit is None:
+                continue
+        
+            if isinstance(datum, datetime):
+                datum = datum.date()
+        
+            if isinstance(uhrzeit, float):
+                uhrzeit = self._excel_time_to_time(uhrzeit)
+            elif isinstance(uhrzeit, datetime):
+                uhrzeit = uhrzeit.time()
+        
+            measurement = Measurement(
+                date=datum,
+                time=uhrzeit,
+                systolic=int(row[2]),
+                diastolic=int(row[3]),
+                pulse=int(row[4])
+            )
+        
+            measurements.append(measurement)
+    
+        return measurements
+    

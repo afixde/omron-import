@@ -5,6 +5,8 @@ from config import CSV_DIR, EXCEL_FILE, BACKUP_DIR, ARCHIVE_DIR
 from file_utils import archive_file
 from logger_config import get_logger
 from version import VERSION
+from statistics_service import StatisticsService
+from console import info
 
 import sys
 
@@ -28,8 +30,32 @@ def main() -> None:
         logger.info("%s Messungen eingelesen", len(measurements))        
 
         print(f"{len(measurements)} Messungen eingelesen")
-
-#        if measurements:
+        stats = StatisticsService()
+        summary = stats.summarize(measurements)
+        print()
+        print("Statistik")
+        print("-" * 30)
+        
+        print(f"Messungen : {summary['count']}")
+        
+        print()
+        
+        print(f"SYS Ø     : {summary['avg_sys']} mmHg")
+        print(f"SYS Min   : {summary['min_sys']} mmHg")
+        print(f"SYS Max   : {summary['max_sys']} mmHg")
+        
+        print()
+        
+        print(f"DIA Ø     : {summary['avg_dia']} mmHg")
+        print(f"DIA Min   : {summary['min_dia']} mmHg")
+        print(f"DIA Max   : {summary['max_dia']} mmHg")
+        
+        print()
+        
+        print(f"Puls Ø    : {summary['avg_pulse']} bpm")
+        print(f"Puls Min  : {summary['min_pulse']} bpm")
+        print(f"Puls Max  : {summary['max_pulse']} bpm")
+        #        if measurements:
 #            print()
 #            print("Erste Messung:")
 #            print(measurements[0])
@@ -42,6 +68,16 @@ def main() -> None:
         
         excel.open()
 
+        all_measurements = excel.get_all_measurements()
+        summary = stats.summarize(all_measurements)
+       
+        print()
+        print(f"Excel enthält {len(all_measurements)} Messungen")
+        if all_measurements:
+            print()
+            print("Erste Messung aus Excel:")
+            print(all_measurements[0])
+    
         existing = excel.get_existing_keys()
         logger.info("%d vorhandene Messungen", len(existing))
 
