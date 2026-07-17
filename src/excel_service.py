@@ -126,14 +126,19 @@ class ExcelService:
     
         row = new_row.Range
     
-        row.Cells(1, 1).Value = self._date_to_excel(measurement.date)
-        row.Cells(1, 1).NumberFormatLocal = "TT.MM.JJJJ"
-        
-        row.Cells(1, 2).Value = (
-            measurement.time.hour / 24
-            + measurement.time.minute / 1440
-            + measurement.time.second / 86400
+        row.Cells(1,1).Value = datetime.combine(
+            measurement.date,
+            time.min
         )
+        
+        row.Cells(1,1).NumberFormatLocal = "TT.MM.JJJJ"
+        
+        row.Cells(1,2).Value = datetime.combine(
+            date.today(),
+            measurement.time
+        )
+        
+        row.Cells(1,2).NumberFormatLocal = "hh:mm"
         
 #        print("Zeit Excel :", row.Cells(1, 2).Value)
         
@@ -176,7 +181,11 @@ class ExcelService:
         sort.Header = 1          # xlYes
         sort.MatchCase = False
         sort.Orientation = 1     # xlTopToBottom
-    
+ 
+#        print(self.table.Name)
+#        print(self.table.Range.Address)
+#        print(self.table.DataBodyRange.Address)  
+         
         sort.Apply()
 
     def backup_workbook(self, backup_dir: Path) -> Path:

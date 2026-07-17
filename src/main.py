@@ -7,6 +7,7 @@ from logger_config import get_logger
 from version import VERSION
 from statistics_service import StatisticsService
 from console import info
+from chart_service import ChartService
 
 import sys
 
@@ -72,13 +73,12 @@ def main() -> None:
         summary = stats.summarize(measurements)
            
         excel = ExcelService(EXCEL_FILE)
+        excel.open()
         logger.info("Excel geöffnet")
 
         backup = excel.backup_workbook(BACKUP_DIR)
         print(f"Backup erstellt: {backup.name}")
         
-        excel.open()
-
         show_statistics(excel)
 
         all_measurements = excel.get_all_measurements()
@@ -109,9 +109,15 @@ def main() -> None:
                 excel.append_measurement(measurement)
 
             excel.sort_table()
-            excel.create_chart()
-            excel.save()
             print("Import abgeschlossen.")
+            excel.create_chart()
+#            chart = ChartService(
+#                excel.worksheet,
+#                excel.table
+#            )
+#            chart.update_chart()
+            print("Chart abgeschlossen")
+            excel.save()
             print("Excel gespeichert.")
 
             archived = archive_file(
@@ -123,7 +129,7 @@ def main() -> None:
             logger.info("Import erfolgreich abgeschlossen")#        print()
 #        print(f"{len(existing)} vorhandene Messungen in Excel")
 
-        excel.close()
+#        excel.close()
 
     except FileNotFoundError:
         print()
@@ -141,6 +147,9 @@ def main() -> None:
         print(ex)
         logger.exception("Unerwarteter Fehler")
         sys.exit(1)
+
+    finally:
+        excel.close()
 
     input("\nDrücken Sie ENTER zum Beenden...")
 
