@@ -1,6 +1,7 @@
 from pathlib import Path
 from models import Measurement
 from datetime import date, time, datetime, timedelta
+from win32com.client import constants
 
 import win32com.client
 import shutil
@@ -13,7 +14,7 @@ class ExcelService:
 
         self.excel = None
         self.workbook = None
-        self.sheet = None
+        self.worksheet = None
         self.table = None
 
     @staticmethod
@@ -36,12 +37,12 @@ class ExcelService:
         if self.workbook is None:
             return
 
-        self.sheet = self.workbook.Worksheets("Omron")
+        self.worksheet = self.workbook.Worksheets("Omron")
 
-        self.table = self.sheet.ListObjects(1)
+        self.table = self.worksheet.ListObjects(1)
 
 #        print("Excel geöffnet.")
-#        print(f"Arbeitsblatt : {self.sheet.Name}")
+#        print(f"Arbeitsblatt : {self.worksheet.Name}")
 #        print(f"Tabelle      : {self.table.Name}")
 
     def close(self) -> None:
@@ -236,4 +237,48 @@ class ExcelService:
             measurements.append(measurement)
     
         return measurements
+ 
+    def create_chart(self) -> None:
+
+        ws = self.worksheet
+    
+        chart_name = "Blutdruck"
+    
+        # Vorhandenes Diagramm löschen
+        for chart in ws.ChartObjects():
+            if chart.Name == chart_name:
+                chart.Delete()
+                break
+    
+        print("Vorhandenes Diagramm entfernt.")
+    
+        chart = ws.ChartObjects().Add(
+            Left=750,
+            Top=20,
+            Width=650,
+            Height=350
+        )
+    
+        chart.Name = chart_name
+    
+#        chart.Chart.ChartType = constants.xlLine
+        chart.Chart.ChartType = 65
+        date_range = self.table.ListColumns(1).DataBodyRange
+        sys_range = self.table.ListColumns(3).DataBodyRange
+
+        series = chart.Chart.SeriesCollection().NewSeries()
+        series.Name = "Systolisch"
+        series.XValues = date_range
+        series.Values = sys_range
+
+        dia_range = self.table.ListColumns(4).DataBodyRange
+        series2 = chart.Chart.SeriesCollection().NewSeries()
+        series2.Name = "Diastolisch"
+        series2.XValues = date_range
+        series2.Values = dia_range
+    
+        chart.Chart.HasTitle = True
+        chart.Chart.ChartTitle.Text = "Blutdruckverlauf"
+    
+        print("Diagramm erzeugt.")
     

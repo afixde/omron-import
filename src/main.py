@@ -12,6 +12,44 @@ import sys
 
 logger = get_logger()
 
+def show_statistics(excel: ExcelService) -> None:
+    """
+    Zeigt die Statistik aller Messungen an.
+    """
+
+    stats = StatisticsService()
+
+    all_measurements = excel.get_all_measurements()
+
+    summary = stats.summarize(all_measurements)
+
+    print()
+    print("Statistik")
+    print("-" * 30)
+
+    print(f"Messungen : {summary['count']}")
+
+    print()
+
+    print(f"SYS Ø      : {summary['avg_sys']} mmHg")
+    print(f"SYS Median : {summary['median_sys']} mmHg")
+    print(f"SYS Min    : {summary['min_sys']} mmHg")
+    print(f"SYS Max    : {summary['max_sys']} mmHg")
+
+    print()
+
+    print(f"DIA Ø      : {summary['avg_dia']} mmHg")
+    print(f"DIA Median : {summary['median_dia']} mmHg")
+    print(f"DIA Min    : {summary['min_dia']} mmHg")
+    print(f"DIA Max    : {summary['max_dia']} mmHg")
+    
+    print()
+    
+    print(f"Puls Ø     : {summary['avg_pulse']} bpm")
+    print(f"Puls Median: {summary['median_pulse']} bpm")
+    print(f"Puls Min   : {summary['min_pulse']} bpm")
+    print(f"Puls Max   : {summary['max_pulse']} bpm")
+
 def main() -> None:
 
     print("=" * 50)
@@ -32,34 +70,7 @@ def main() -> None:
         print(f"{len(measurements)} Messungen eingelesen")
         stats = StatisticsService()
         summary = stats.summarize(measurements)
-        print()
-        print("Statistik")
-        print("-" * 30)
-        
-        print(f"Messungen : {summary['count']}")
-        
-        print()
-        
-        print(f"SYS Ø     : {summary['avg_sys']} mmHg")
-        print(f"SYS Min   : {summary['min_sys']} mmHg")
-        print(f"SYS Max   : {summary['max_sys']} mmHg")
-        
-        print()
-        
-        print(f"DIA Ø     : {summary['avg_dia']} mmHg")
-        print(f"DIA Min   : {summary['min_dia']} mmHg")
-        print(f"DIA Max   : {summary['max_dia']} mmHg")
-        
-        print()
-        
-        print(f"Puls Ø    : {summary['avg_pulse']} bpm")
-        print(f"Puls Min  : {summary['min_pulse']} bpm")
-        print(f"Puls Max  : {summary['max_pulse']} bpm")
-        #        if measurements:
-#            print()
-#            print("Erste Messung:")
-#            print(measurements[0])
-            
+           
         excel = ExcelService(EXCEL_FILE)
         logger.info("Excel geöffnet")
 
@@ -67,6 +78,8 @@ def main() -> None:
         print(f"Backup erstellt: {backup.name}")
         
         excel.open()
+
+        show_statistics(excel)
 
         all_measurements = excel.get_all_measurements()
         summary = stats.summarize(all_measurements)
@@ -96,9 +109,11 @@ def main() -> None:
                 excel.append_measurement(measurement)
 
             excel.sort_table()
+            excel.create_chart()
             excel.save()
             print("Import abgeschlossen.")
             print("Excel gespeichert.")
+
             archived = archive_file(
                 csv_file,
                 ARCHIVE_DIR
