@@ -36,4 +36,12 @@ class StatisticsService:
             "min_pulse": min(pulse_values),
             "max_pulse": max(pulse_values),
         }        
-       
+
+    def report(self, measurements):
+        summary = self.summarize(measurements)
+    
+        # <-- Hier den bisherigen Statistik-Ausgabecode aus main.py
+        #     unverändert hineinkopieren.
+    
+        return summary      
+ 
