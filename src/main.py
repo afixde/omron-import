@@ -26,7 +26,6 @@ def show_statistics(excel: ExcelService) -> None:
 def main() -> None:
     service = ImportService()
     service.run()
-    return
 
 def main1() -> None:
 
