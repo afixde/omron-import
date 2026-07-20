@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.0] - 2026-07-20
+
+### Added
+- Backup der Excel-Arbeitsmappe vor jedem Import
+- Automatische Archivierung importierter CSV-Dateien
+- Statistikservice mit Mittelwert, Median sowie Min-/Max-Werten
+- Verbesserte Dublettenerkennung
+- Strukturierter ImportService
+
+### Changed
+- Projektarchitektur weiter in Service-Klassen aufgeteilt
+- Logging erweitert
+- Sortierung der Excel-Tabelle verbessert
+
+### Fixed
+- Fehler bei der Datums- und Zeitformatierung in Excel
+- COM-Probleme beim Schreiben neuer Messwerte
+- Erkennung vorhandener Messungen verbessert
+
 # Version 0.5.0
 
 ## Neu
