@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.7.0] - 2026-07-21
+
+### Added
+- Modularer ChartService zur automatischen Erstellung und Aktualisierung des Blutdruckdiagramms
+- Unterstützung einer Sekundärachse für die Pulswerte
+- Zentrale Tabellenkonfiguration über `TABLE_COLUMNS`
+
+### Changed
+- ChartService vollständig refaktoriert
+- Diagrammerstellung in Aufbau (`_build_chart`) und Formatierung (`_format_chart`) getrennt
+- Mehrfache Serien durch generische `_add_series()`-Methode ersetzt
+- Codebereinigung und Vereinheitlichung der Typannotationen und Docstrings
+
+### Fixed
+- Fehler bei der Zuordnung der Primär- und Sekundärachsen
+- Verbesserung der Diagrammaktualisierung nach dem Import
+- Entfernen redundanter und veralteter Implementierungen
+
+## [0.6.0] - 2026-07-20
+
+### Added
+- Backup der Excel-Arbeitsmappe vor jedem Import
+- Automatische Archivierung importierter CSV-Dateien
+- Statistikservice mit Mittelwert, Median sowie Min-/Max-Werten
+- Verbesserte Dublettenerkennung
+- Strukturierter ImportService
+
+### Changed
+- Projektarchitektur weiter in Service-Klassen aufgeteilt
+- Logging erweitert
+- Sortierung der Excel-Tabelle verbessert
+
+### Fixed
+- Fehler bei der Datums- und Zeitformatierung in Excel
+- COM-Probleme beim Schreiben neuer Messwerte
+- Erkennung vorhandener Messungen verbessert
+
 # Version 0.5.0
 
 ## Neu
