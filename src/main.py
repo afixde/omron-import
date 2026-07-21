@@ -8,6 +8,7 @@ from version import VERSION
 from statistics_service import StatisticsService
 from console import info
 from chart_service import ChartService
+from import_service import ImportService
 
 import sys
 
@@ -19,39 +20,14 @@ def show_statistics(excel: ExcelService) -> None:
     """
 
     stats = StatisticsService()
-
     all_measurements = excel.get_all_measurements()
-
-    summary = stats.summarize(all_measurements)
-
-    print()
-    print("Statistik")
-    print("-" * 30)
-
-    print(f"Messungen : {summary['count']}")
-
-    print()
-
-    print(f"SYS Ø      : {summary['avg_sys']} mmHg")
-    print(f"SYS Median : {summary['median_sys']} mmHg")
-    print(f"SYS Min    : {summary['min_sys']} mmHg")
-    print(f"SYS Max    : {summary['max_sys']} mmHg")
-
-    print()
-
-    print(f"DIA Ø      : {summary['avg_dia']} mmHg")
-    print(f"DIA Median : {summary['median_dia']} mmHg")
-    print(f"DIA Min    : {summary['min_dia']} mmHg")
-    print(f"DIA Max    : {summary['max_dia']} mmHg")
-    
-    print()
-    
-    print(f"Puls Ø     : {summary['avg_pulse']} bpm")
-    print(f"Puls Median: {summary['median_pulse']} bpm")
-    print(f"Puls Min   : {summary['min_pulse']} bpm")
-    print(f"Puls Max   : {summary['max_pulse']} bpm")
+    stats.report(all_measurements)
 
 def main() -> None:
+    service = ImportService()
+    service.run()
+
+def main1() -> None:
 
     print("=" * 50)
     print(f" Omron Import v{VERSION}")
