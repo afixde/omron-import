@@ -6,7 +6,9 @@ from config import TABLE_COLUMNS
 class ChartService:
 
     CHART_NAME = "Blutdruck"
-
+    AXIS_PRIMARY = 1
+    AXIS_SECONDARY = 2
+    
     def __init__(self, worksheet, table):
         self.ws = worksheet
         self.table = table
@@ -18,17 +20,10 @@ class ChartService:
         Erstellt oder aktualisiert das Blutdruckdiagramm.
         """
         self.chart = self._get_chart()
-        
-        self._clear_series()
-        self._add_sys_series()
-        self._add_dia_series()
-        self._add_pulse_series()    
-        
-        self._format_title()
-        self._format_legend()
-        self._format_axes()
-        self._format_series()    
-
+    
+        self._build_chart()
+        self._format_chart()
+    
     def _get_chart(self):
         """
         Liefert das Diagramm. Existiert es nicht, wird es erzeugt.
@@ -92,34 +87,32 @@ class ChartService:
         while self.chart.SeriesCollection().Count > 0:
             self.chart.SeriesCollection(1).Delete()
 
-    def _add_sys_series(self):
+    def _add_series(
+        self,
+        name,
+        axis_group=None
+    ):
+        if axis_group is None:
+            axis_group = 1      # xlPrimary
         series = self.chart.SeriesCollection().NewSeries()
-        series.Name = TABLE_COLUMNS["sys"]
-        series.Values = self._get_data_range("sys")
-        series.XValues = self._get_data_range("date")
-        series.AxisGroup = constants.xlPrimary
-        print("SYS-Serie angelegt:", series.Name)   
-
-    def _add_dia_series(self):
-        """
-        Fügt die diastolische Messreihe hinzu.
-        """
-        series = self.chart.SeriesCollection().NewSeries()
-        series.Name = TABLE_COLUMNS["dia"]
-        series.Values = self._get_data_range("dia")
-        series.XValues = self._get_data_range("date")
-        series.AxisGroup = constants.xlPrimary
-                 
-    def _add_pulse_series(self):
-        """
-        Fügt die Puls-Messreihe hinzu.
-        """
-        series = self.chart.SeriesCollection().NewSeries()
-        series.Name = TABLE_COLUMNS["pulse"]
-        series.Values = self._get_data_range("pulse")
-        series.XValues = self._get_data_range("date")
-        series.AxisGroup = constants.xlSecondary
     
+        series.Name = TABLE_COLUMNS[name]
+        series.Values = self._get_data_range(name)
+        series.XValues = self._get_data_range("date")
+        series.AxisGroup = axis_group
+    
+    def _build_chart(self):
+        self._clear_series()
+        self._add_series("sys")
+        self._add_series("dia")
+        self._add_series("pulse", self.AXIS_SECONDARY)
+
+    def _format_chart(self):
+        self._format_title()
+        self._format_legend()
+        self._format_axes()
+        self._format_series()
+        
     def _format_title(self):
         self.chart.HasTitle = True
         self.chart.ChartTitle.Text = "Blutdruckverlauf"
