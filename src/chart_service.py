@@ -1,11 +1,10 @@
 import win32com.client
 
 from win32com.client import constants
-from config import TABLE_COLUMNS
+from config import TABLE_COLUMNS, CHART_NAME
 
 class ChartService:
 
-    CHART_NAME = "Blutdruck"
     AXIS_PRIMARY = 1
     AXIS_SECONDARY = 2
     
@@ -29,28 +28,18 @@ class ChartService:
         Liefert das Diagramm. Existiert es nicht, wird es erzeugt.
         """
         for chart_object in self.ws.ChartObjects():
-            if chart_object.Name == self.CHART_NAME:
+            if chart_object.Name == CHART_NAME:
                 return chart_object.Chart
     
         self._create_chart()
     
         for chart_object in self.ws.ChartObjects():
-            if chart_object.Name == self.CHART_NAME:
+            if chart_object.Name == CHART_NAME:
                 return chart_object.Chart
     
         raise RuntimeError(
-            f"Diagramm '{self.CHART_NAME}' konnte nicht erzeugt werden."
+            f"Diagramm '{CHART_NAME}' konnte nicht erzeugt werden."
         )
-    
-    def _get_series(self, name: str):
-        """
-        Liefert eine Datenreihe anhand ihres Namens.
-        """
-        for series in self.chart.SeriesCollection():
-            if series.Name == name:
-                return series
-    
-        return None
     
     def _create_chart(self):
         """Erzeugt ein leeres Diagramm."""
@@ -61,12 +50,10 @@ class ChartService:
             Height=350
         )
 
-        chart_object.Name = self.CHART_NAME
+        chart_object.Name = CHART_NAME
 
         chart = chart_object.Chart
         chart.ChartType = constants.xlLine
-##        chart.ChartType = 4
-        chart.SetSourceData(self.table.Range)
 
         chart.HasTitle = True
         chart.ChartTitle.Text = "Blutdruckverlauf"
@@ -89,11 +76,11 @@ class ChartService:
 
     def _add_series(
         self,
-        name,
-        axis_group=None
-    ):
+        name: str,
+        axis_group: int | None = None
+    ):        
         if axis_group is None:
-            axis_group = 1      # xlPrimary
+            axis_group = self.AXIS_PRIMARY      # xlPrimary
         series = self.chart.SeriesCollection().NewSeries()
     
         series.Name = TABLE_COLUMNS[name]
