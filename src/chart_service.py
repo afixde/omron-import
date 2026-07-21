@@ -2,6 +2,9 @@ import win32com.client
 
 from win32com.client import constants
 from config import TABLE_COLUMNS, CHART_NAME
+from logger_config import get_logger
+
+logger = get_logger()
 
 class ChartService:
 
@@ -89,11 +92,16 @@ class ChartService:
         series.AxisGroup = axis_group
     
     def _build_chart(self):
-        self._clear_series()
-        self._add_series("sys")
-        self._add_series("dia")
-        self._add_series("pulse", self.AXIS_SECONDARY)
+        try:
+            self._clear_series()
+            self._add_series("sys")
+            self._add_series("dia")
+            self._add_series("pulse", self.AXIS_SECONDARY)
 
+        except Exception:
+            logger.exception("Fehler beim Erzeugen des Diagramms.")
+            raise
+        
     def _format_chart(self):
         self._format_title()
         self._format_legend()
