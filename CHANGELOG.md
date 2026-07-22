@@ -12,11 +12,16 @@
 - Diagrammerstellung in Aufbau (`_build_chart`) und Formatierung (`_format_chart`) getrennt
 - Mehrfache Serien durch generische `_add_series()`-Methode ersetzt
 - Codebereinigung und Vereinheitlichung der Typannotationen und Docstrings
+- Hilfsspalten werden jetzt vollständig in Python berechnet
+- Excel-Datum und -Uhrzeit werden als Excel-Serienwerte gespeichert
+- Konsolenausgabe bereinigt und Debug-Ausgaben entfernt
 
 ### Fixed
 - Fehler bei der Zuordnung der Primär- und Sekundärachsen
 - Verbesserung der Diagrammaktualisierung nach dem Import
 - Entfernen redundanter und veralteter Implementierungen
+- Wiederholter Import derselben CSV-Datei erzeugt keine Dubletten mehr
+- Dublettenerkennung anhand von Datum, Uhrzeit und Messwerten stabilisiert
 
 ## [0.6.0] - 2026-07-20
 

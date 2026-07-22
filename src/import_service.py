@@ -2,6 +2,8 @@ from csv_reader import OmronCsvReader
 from excel_service import ExcelService
 from statistics_service import StatisticsService
 from chart_service import ChartService
+from helper_columns_service import HelperColumnsService
+from datetime import date, time, datetime, timedelta
 
 from config import (
     CSV_DIR,
@@ -21,7 +23,7 @@ class ImportService:
         self.reader = OmronCsvReader()
         self.stats = StatisticsService()
         self.excel = ExcelService(EXCEL_FILE)
-        
+        self.helper_columns_service = HelperColumnsService()        
         self.chart = None
         self.csv_file = None
         self.backup_file = None
@@ -40,10 +42,18 @@ class ImportService:
     
     def _find_new_measurements(self):
         existing_keys = self.excel.get_existing_keys()
+
         self.new_measurements = [
-            m for m in self.csv_measurements
-            if (m.date, m.time) not in existing_keys
+            m
+            for m in self.csv_measurements
+            if (
+                f"{m.date.isoformat()} {m.time.strftime('%H:%M')}",
+                m.systolic,
+                m.diastolic,
+                m.pulse,
+            ) not in existing_keys
         ]
+                
         print(f"{len(self.new_measurements)} neue Messungen gefunden")
         logger.info(
             "%s neue Messungen gefunden",
@@ -55,10 +65,15 @@ class ImportService:
             print("Keine neuen Messungen vorhanden.")
             return False
         print(
-            f"{len(self.new_measurements)} neue Messungen werden importiert..."
+            f"{len(self.new_measurements)} neue Messungen werden eingefügt..."
         )
-        for measurement in self.new_measurements:
-            self.excel.append_measurement(measurement)
+        helpers = self.helper_columns_service.build(self.new_measurements)
+    
+        for measurement, helper in zip(self.new_measurements, helpers):
+            self.excel.append_measurement(
+                measurement,
+                helper,
+            )
         return True
     
     def _open_excel(self):
@@ -102,7 +117,6 @@ class ImportService:
         Führt den kompletten Import durch.
         """
         try:
-
             self._read_csv()
             self._open_excel()
             self._show_statistics()
@@ -110,9 +124,8 @@ class ImportService:
             if self._import_measurements():
                 self._sort_table()
                 self._update_chart()
-            self._save_excel()   
-            self._archive_csv()  
-    #        self._close_excel()
+                self._save_excel()   
+                self._archive_csv()  
     
         except Exception as ex:
             print()
