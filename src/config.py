@@ -39,3 +39,11 @@ TABLE_COLUMNS = {
     "device": "Gerät",
     "notes": "Notizen",
 }
+
+CALCULATED_COLUMNS = [
+    "marker",
+    "sys_avg",
+    "dia_avg",
+    "pulse_avg",
+    "daytime",
+]

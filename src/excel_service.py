@@ -16,7 +16,10 @@ class ExcelService:
         self.workbook = None
         self.worksheet = None
         self.table = None
-
+        self._formula_source_row = None
+        self._first_new_row = None
+        self._last_new_row = None
+        
     @staticmethod
     def _date_to_excel(d: date) -> int:
         excel_epoch = date(1899, 12, 30)
@@ -58,6 +61,44 @@ class ExcelService:
     def _excel_time_to_time(value: float) -> time:
         sekunden = round(value * 24 * 60 * 60)
         return (datetime.min + timedelta(seconds=sekunden)).time()
+
+    def _copy_calculated_formulas(self, row) -> None:
+        if self._formula_source_row is None:
+            return
+        source = self.worksheet.Rows(self._formula_source_row)
+        for col in (6, 7, 8, 9, 10):
+            row.Cells(1, col).FormulaLocal = source.Cells(col).FormulaLocal
+        self._last_new_row = row.Row
+
+    def fill_calculated_columns(self) -> None:
+        """
+        Überträgt die Formelspalten F:J
+        mittels Excel Copy/PasteSpecial.
+        """
+        if self._formula_source_row is None:
+            return
+        if self._last_new_row is None:
+            return
+        source = self.worksheet.Range(
+            f"F{self._formula_source_row}:J{self._formula_source_row}"
+        )
+        target = self.worksheet.Range(
+            f"F{self._first_new_row}:J{self._last_new_row}"
+        )
+        source.Copy()
+        target.PasteSpecial(constants.xlPasteFormulas)
+        self.excel.CutCopyMode = False
+
+
+    def prepare_formula_copy(self):
+    
+        self._formula_source_row = (
+            self.table.DataBodyRange.Rows(
+                self.table.DataBodyRange.Rows.Count
+            ).Row
+        )
+    
+        self._first_new_row = self._formula_source_row + 1
             
     def get_existing_keys(self) -> set[str]:
         """
@@ -125,7 +166,34 @@ class ExcelService:
         new_row = self.table.ListRows.Add()
     
         row = new_row.Range
-    
+
+#        # ===== Mini-Test =====
+#        print()
+#        print("Neue Tabellenzeile")
+#        print("------------------")
+#        print("Excel-Zeile        :", row.Row)
+#        print("Tabellenzeilen     :", self.table.ListRows.Count)
+#        print("Tabellenbereich    :", self.table.DataBodyRange.Address)
+#        print("Zeilenadresse      :", row.Address)
+#        print("===================")
+#
+#        print("Marker neu        :", row.Cells(1, 6).FormulaLocal)
+#        print("SYS Avg neu       :", row.Cells(1, 7).FormulaLocal)
+#        print("DIA Avg neu       :", row.Cells(1, 8).FormulaLocal)
+#        print("Puls Avg neu      :", row.Cells(1, 9).FormulaLocal)
+#        print("Tageszeit neu     :", row.Cells(1,10).FormulaLocal)
+#
+#        prev = self.worksheet.Rows(row.Row - 1)
+#        
+#        print()
+#        print("Vorherige Zeile")
+#        print("------------------")
+#        print("Marker alt        :", prev.Cells(6).FormulaLocal)
+#        print("SYS Avg alt       :", prev.Cells(7).FormulaLocal)
+#        print("DIA Avg alt       :", prev.Cells(8).FormulaLocal)
+#        print("Puls Avg alt      :", prev.Cells(9).FormulaLocal)
+#        print("Tageszeit alt     :", prev.Cells(10).FormulaLocal)
+#    
         row.Cells(1,1).Value = datetime.combine(
             measurement.date,
             time.min
@@ -150,6 +218,8 @@ class ExcelService:
         
         row.Cells(1, 5).Value = measurement.pulse
 #        print("Puls:", row.Cells(1, 5).Value)    
+        self._copy_calculated_formulas(row)
+
             
     def save(self) -> None:
         """Speichert die Arbeitsmappe."""

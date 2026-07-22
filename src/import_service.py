@@ -55,7 +55,7 @@ class ImportService:
             print("Keine neuen Messungen vorhanden.")
             return False
         print(
-            f"{len(self.new_measurements)} neue Messungen werden importiert..."
+            f"{len(self.new_measurements)} neue Messungen werden eingefügt..."
         )
         for measurement in self.new_measurements:
             self.excel.append_measurement(measurement)
@@ -107,7 +107,10 @@ class ImportService:
             self._open_excel()
             self._show_statistics()
             self._find_new_measurements()
+            if self.new_measurements:
+                self.excel.prepare_formula_copy()
             if self._import_measurements():
+                self.excel.fill_calculated_columns()
                 self._sort_table()
                 self._update_chart()
             self._save_excel()   
