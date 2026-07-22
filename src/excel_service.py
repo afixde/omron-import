@@ -19,20 +19,10 @@ class ExcelService:
         self._formula_source_row = None
         self._first_new_row = None
         self._last_new_row = None
-        
-    @staticmethod
-    def _date_to_excel(d: date) -> int:
-        excel_epoch = date(1899, 12, 30)
-        return (d - excel_epoch).days
 
-    @staticmethod
-    def _time_to_excel(t: time) -> float:
-        return (
-            t.hour * 3600
-            + t.minute * 60
-            + t.second
-        ) / 86400
-
+# ============================================================================
+# Workbook
+# ============================================================================
     def open(self) -> None:
         """Öffnet die Arbeitsmappe."""
 
@@ -61,10 +51,73 @@ class ExcelService:
         if self.excel:
             self.excel.Quit()
 
-    @staticmethod
-    def _excel_time_to_time(value: float) -> time:
-        sekunden = round(value * 24 * 60 * 60)
-        return (datetime.min + timedelta(seconds=sekunden)).time()
+    def save(self) -> None:
+        """Speichert die Arbeitsmappe."""
+        self.workbook.Save()
+        
+# ============================================================================
+# Backup
+# ============================================================================
+    def backup_workbook(self, backup_dir: Path) -> Path:
+        """
+        Erstellt eine Sicherung der Excel-Datei.
+        """
+    
+        backup_dir.mkdir(parents=True, exist_ok=True)
+    
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    
+        backup_file = backup_dir / f"Omron_{timestamp}.xlsx"
+    
+        shutil.copy2(self.workbook_path, backup_file)
+    
+        return backup_file         
+ 
+# ============================================================================
+# Measurement Import
+# ============================================================================
+    def append_measurement(
+        self,
+        measurement: Measurement,
+        helper: HelperRow,
+    ) -> None:        
+        """
+        Fügt eine Messung am Ende der Excel-Tabelle hinzu.
+        """
+       
+        new_row = self.table.ListRows.Add()
+    
+        row = new_row.Range
+
+        row.Cells(1, 1).Value = self._date_to_excel(measurement.date)
+        row.Cells(1, 1).NumberFormatLocal = "TT.MM.JJJJ"        
+ 
+        row.Cells(1, 2).Value = self._time_to_excel(measurement.time)                
+        row.Cells(1, 2).NumberFormatLocal = "hh:mm"        
+        
+        row.Cells(1, 3).Value = measurement.systolic
+#        print("SYS:", row.Cells(1, 3).Value)
+        
+        row.Cells(1, 4).Value = measurement.diastolic
+#        print("DIA:", row.Cells(1, 4).Value)
+        
+        row.Cells(1, 5).Value = measurement.pulse
+#        print("Puls:", row.Cells(1, 5).Value)    
+
+        row.Cells(1, 6).Value = helper.marker
+        row.Cells(1,10).Value = helper.daytime
+        
+        if helper.systolic_avg is not None:
+            row.Cells(1, 7).Value = helper.systolic_avg
+        
+        if helper.diastolic_avg is not None:
+            row.Cells(1, 8).Value = helper.diastolic_avg
+        
+        if helper.pulse_avg is not None:
+            row.Cells(1, 9).Value = helper.pulse_avg        
+        
+#        self._copy_calculated_formulas(row)
+
             
     def get_existing_keys(self) -> set[tuple[str, int, int, int]]:
         """
@@ -115,95 +168,6 @@ class ExcelService:
         
         return keys
 
-    def append_measurement(
-        self,
-        measurement: Measurement,
-        helper: HelperRow,
-    ) -> None:        
-        """
-        Fügt eine Messung am Ende der Excel-Tabelle hinzu.
-        """
-       
-        new_row = self.table.ListRows.Add()
-    
-        row = new_row.Range
-
-        row.Cells(1, 1).Value = self._date_to_excel(measurement.date)
-        row.Cells(1, 1).NumberFormatLocal = "TT.MM.JJJJ"        
- 
-        row.Cells(1, 2).Value = self._time_to_excel(measurement.time)                
-        row.Cells(1, 2).NumberFormatLocal = "hh:mm"        
-        
-        row.Cells(1, 3).Value = measurement.systolic
-#        print("SYS:", row.Cells(1, 3).Value)
-        
-        row.Cells(1, 4).Value = measurement.diastolic
-#        print("DIA:", row.Cells(1, 4).Value)
-        
-        row.Cells(1, 5).Value = measurement.pulse
-#        print("Puls:", row.Cells(1, 5).Value)    
-
-        row.Cells(1, 6).Value = helper.marker
-        row.Cells(1,10).Value = helper.daytime
-        
-        if helper.systolic_avg is not None:
-            row.Cells(1, 7).Value = helper.systolic_avg
-        
-        if helper.diastolic_avg is not None:
-            row.Cells(1, 8).Value = helper.diastolic_avg
-        
-        if helper.pulse_avg is not None:
-            row.Cells(1, 9).Value = helper.pulse_avg        
-        
-#        self._copy_calculated_formulas(row)
-
-            
-    def save(self) -> None:
-        """Speichert die Arbeitsmappe."""
-        self.workbook.Save()
-        
-    def sort_table(self) -> None:
-        """Sortiert die Tabelle nach Datum und Uhrzeit."""
-    
-        sort = self.table.Sort
-    
-        sort.SortFields.Clear()
-        
-        sort.SortFields.Add(
-            Key=self.table.ListColumns(1).Range,
-            SortOn=0,
-            Order=1,
-            DataOption=0
-        ) 
-
-        sort.SortFields.Add(
-            Key=self.table.ListColumns(2).Range,
-            SortOn=0,
-            Order=1,
-            DataOption=0
-        )
-
-        sort.Header = 1          # xlYes
-        sort.MatchCase = False
-        sort.Orientation = 1     # xlTopToBottom
- 
-        sort.Apply()
-
-    def backup_workbook(self, backup_dir: Path) -> Path:
-        """
-        Erstellt eine Sicherung der Excel-Datei.
-        """
-    
-        backup_dir.mkdir(parents=True, exist_ok=True)
-    
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    
-        backup_file = backup_dir / f"Omron_{timestamp}.xlsx"
-    
-        shutil.copy2(self.workbook_path, backup_file)
-    
-        return backup_file         
-    
     def get_all_measurements(self) -> list[Measurement]:
         """
         Liest alle Messungen aus der Excel-Tabelle.
@@ -248,6 +212,62 @@ class ExcelService:
     
         return measurements
  
+
+# ============================================================================
+# Helpers
+# ============================================================================
+    @staticmethod
+    def _date_to_excel(d: date) -> int:
+        excel_epoch = date(1899, 12, 30)
+        return (d - excel_epoch).days
+
+    @staticmethod
+    def _time_to_excel(t: time) -> float:
+        return (
+            t.hour * 3600
+            + t.minute * 60
+            + t.second
+        ) / 86400
+
+    @staticmethod
+    def _excel_time_to_time(value: float) -> time:
+        sekunden = round(value * 24 * 60 * 60)
+        return (datetime.min + timedelta(seconds=sekunden)).time()
+            
+# ============================================================================
+# Table
+# ============================================================================
+    def sort_table(self) -> None:
+        """Sortiert die Tabelle nach Datum und Uhrzeit."""
+    
+        sort = self.table.Sort
+    
+        sort.SortFields.Clear()
+        
+        sort.SortFields.Add(
+            Key=self.table.ListColumns(1).Range,
+            SortOn=0,
+            Order=1,
+            DataOption=0
+        ) 
+
+        sort.SortFields.Add(
+            Key=self.table.ListColumns(2).Range,
+            SortOn=0,
+            Order=1,
+            DataOption=0
+        )
+
+        sort.Header = 1          # xlYes
+        sort.MatchCase = False
+        sort.Orientation = 1     # xlTopToBottom
+ 
+        sort.Apply()
+
+# ============================================================================
+# Charts
+# ============================================================================
+
     def create_chart(self) -> None:
 
         ws = self.worksheet
@@ -291,4 +311,10 @@ class ExcelService:
         chart.Chart.ChartTitle.Text = "Blutdruckverlauf"
     
 #        print("Diagramm erzeugt.")
+ 
+
+
     
+
+        
+   
