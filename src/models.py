@@ -25,8 +25,6 @@ class Measurement:
         """Datum und Uhrzeit als datetime."""
         return datetime.combine(self.date, self.time)
     
-from dataclasses import dataclass
-
 @dataclass(slots=True)
 class HelperRow:
     marker: str
