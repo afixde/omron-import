@@ -81,7 +81,10 @@ class StatisticsService:
 
     def report(self, measurements):
         summary = self.summarize(measurements)
-    
+        if not summary:
+            print()
+            print("Keine Messungen vorhanden.")
+            return {}    
         # <-- Hier den bisherigen Statistik-Ausgabecode aus main.py
         #     unverändert hineinkopieren.
         self._print_header(summary)
