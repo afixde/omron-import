@@ -31,3 +31,4 @@ test/
 
 # Zip archives
 *.zip
+/.pytest_cache/
