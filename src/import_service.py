@@ -2,6 +2,7 @@ from csv_reader import OmronCsvReader
 from excel_service import ExcelService
 from statistics_service import StatisticsService
 from chart_service import ChartService
+from helper_columns_service import HelperColumnsService
 
 from config import (
     CSV_DIR,
@@ -113,9 +114,9 @@ class ImportService:
                 self.excel.fill_calculated_columns()
                 self._sort_table()
                 self._update_chart()
-            self._save_excel()   
-            self._archive_csv()  
-    #        self._close_excel()
+#            self._save_excel()   
+#            self._archive_csv()  
+#    #        self._close_excel()
     
         except Exception as ex:
             print()

@@ -24,3 +24,14 @@ class Measurement:
     def timestamp(self) -> datetime:
         """Datum und Uhrzeit als datetime."""
         return datetime.combine(self.date, self.time)
+    
+from dataclasses import dataclass
+
+@dataclass(slots=True)
+class HelperRow:
+    marker: str
+    daytime: str
+    systolic_avg: float | None = None
+    diastolic_avg: float | None = None
+    pulse_avg: float | None = None
+    
