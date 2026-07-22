@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.8.0]
+
+### Added
+- Unit tests for ImportService
+- CSV Reader test suite
+- Coverage reporting with pytest-cov
+
+### Improved
+- ImportService orchestration coverage
+- Test project structure
+
 ## [0.7.0] - 2026-07-21
 
 ### Added

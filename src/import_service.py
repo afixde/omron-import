@@ -26,10 +26,13 @@ class ImportService:
         stats=None,
         helper_columns_service=None,
     ):
-        self.reader = OmronCsvReader()
-        self.stats = StatisticsService()
-        self.excel = ExcelService(EXCEL_FILE)
-        self.helper_columns_service = HelperColumnsService()        
+        self.reader = reader or OmronCsvReader()
+        self.stats = stats or StatisticsService()
+        self.excel = excel or ExcelService(EXCEL_FILE)
+        self.helper_columns_service = (
+            helper_columns_service or HelperColumnsService()
+        )
+
         self.chart = None
         self.csv_file = None
         self.backup_file = None
