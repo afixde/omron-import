@@ -19,7 +19,13 @@ logger = get_logger()
 
 class ImportService:
 
-    def __init__(self):
+    def __init__(
+        self,
+        reader=None,
+        excel=None,
+        stats=None,
+        helper_columns_service=None,
+    ):
         self.reader = OmronCsvReader()
         self.stats = StatisticsService()
         self.excel = ExcelService(EXCEL_FILE)
