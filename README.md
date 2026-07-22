@@ -67,6 +67,16 @@ Vor jedem Import wird automatisch eine Sicherungskopie der Excel-Dateits erstell
 
 Nach einem erfolgreichen Import wird die verarbeitete CSV-Datei in das Archivverzeichnis verschoben. Dadurch bleibt das Importverzeichnis übersichtlich und bereits verarbeitete Dateien werden nicht erneut berücksichtigt.
 
-## Projektstruktur
+## Tests
 
-...
+Alle Tests ausführen:
+
+```bash
+python -m pytest
+```
+
+Coverage anzeigen:
+
+```bash
+python -m pytest --cov=src --cov-report=term-missing
+```

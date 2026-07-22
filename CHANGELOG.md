@@ -1,15 +1,23 @@
 # Changelog
 
-## [0.8.0]
+## [0.8.0] - 2026-07-22
 
 ### Added
+- Unit tests for CsvReader
+- Unit tests for HelperColumnsService
 - Unit tests for ImportService
-- CSV Reader test suite
-- Coverage reporting with pytest-cov
+- Test data (`test/data/sample.csv`)
+- Coverage reporting using pytest-cov
 
-### Improved
-- ImportService orchestration coverage
-- Test project structure
+### Changed
+- ImportService supports dependency injection
+- Improved project test structure
+- Improved maintainability and testability
+
+### Quality
+- 22 automated tests
+- ImportService coverage increased to 76%
+- HelperColumnsService fully covered by unit tests
 
 ## [0.7.0] - 2026-07-21
 
