@@ -44,11 +44,11 @@ class StatisticsService:
     
         print(f"Excel enthält {len(measurements)} Messungen")
     
-        if measurements:
-            print()
-            print("Erste Messung aus Excel:")
-            print(measurements[0])
-        
+#        if measurements:
+#            print()
+#            print("Erste Messung aus Excel:")
+#            print(measurements[0])
+#        
     def summarize(self, measurements: list[Measurement]) -> dict:
 
         if not measurements:
